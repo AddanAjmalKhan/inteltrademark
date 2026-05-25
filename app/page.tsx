@@ -145,7 +145,7 @@ export default function Home() {
       {/* ══════════════════════════════════════════════════════════════
           HERO SECTION — Premium Redesign
       ══════════════════════════════════════════════════════════════ */}
-      <section ref={heroRef} className="relative min-h-screen overflow-hidden bg-[#0b0f2a] flex items-center pt-16 py-12 md:py-20">
+      <section ref={heroRef} className="relative min-h-[100svh] overflow-hidden bg-[#0b0f2a] flex items-center pt-16">
 
         {/* ── Background atmosphere ── */}
 
@@ -194,7 +194,7 @@ export default function Home() {
         {/* ── Main grid ── */}
         <motion.div
           style={{ y: heroY, opacity: heroOpacity }}
-          className="max-w-[90rem] mx-auto px-6 md:px-10 relative z-10 grid grid-cols-1 lg:grid-cols-[58%_42%] items-center w-full py-12 md:py-20 gap-0"
+          className="max-w-[90rem] mx-auto px-6 md:px-10 relative z-10 grid grid-cols-1 lg:grid-cols-[58%_42%] items-center w-full py-8 gap-0"
         >
 
           {/* ── LEFT: Text content ─────────────────────── */}
