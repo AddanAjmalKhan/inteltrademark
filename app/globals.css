@@ -1,26 +1,32 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-primary: #ea580c; /* warm vibrant orange */
+  --color-primary-hover: #c2410c; /* darker warm orange */
+  --color-primary-light: #fff7ed; /* soft warm cream/peach */
+  
+  --color-accent: #f97316; /* secondary bright orange */
+  --color-accent-hover: #ea580c;
+  --color-accent-light: #fffbeb; /* soft amber light background */
+
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply antialiased;
+}
+
+/* Custom premium focus rings and scrollbars */
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  --tw-ring-offset-shadow: var(--tw-ring-bleed, 0 0 0 0) var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-bleed, 0 0 0 0) var(--tw-ring-width) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 0 0);
+  border-color: #ea580c;
+  --tw-ring-color: rgba(234, 88, 12, 0.2);
 }
