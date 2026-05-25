@@ -4,118 +4,79 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiMenu, FiX, FiShield, FiSun, FiMoon } from "react-icons/fi";
+import { FiMenu, FiX, FiShield, FiSearch } from "react-icons/fi";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
   const pathname = usePathname();
-
-  useEffect(() => {
-    // Check initial dark mode state
-    const isDark = document.documentElement.classList.contains("dark") || 
-                   localStorage.getItem("theme") === "dark";
-    setDarkMode(isDark);
-    if (isDark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
-
-  const toggleDarkMode = () => {
-    const nextDark = !darkMode;
-    setDarkMode(nextDark);
-    if (nextDark) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  };
 
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/about", label: "About Us" },
     { href: "/services", label: "Services" },
-    { href: "/blog", label: "Blog" },
-    { href: "/faq", label: "FAQ" },
+    { href: "/blog", label: "Our Blog" },
     { href: "/contact", label: "Contact" },
   ];
 
   return (
-    <header className="bg-white/80 dark:bg-stone-950/80 backdrop-blur-md border-b border-orange-100/70 dark:border-stone-900 sticky top-0 z-50 transition-all duration-300">
-      <nav className="max-w-7xl mx-auto flex items-center justify-between p-4 md:px-8">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="bg-gradient-to-r from-orange-600 to-amber-600 p-2 rounded-xl text-white shadow-md shadow-orange-500/10 group-hover:scale-105 transition transform duration-200">
-            <FiShield className="text-xl" />
-          </div>
-          <span className="text-xl font-bold text-stone-900 dark:from-white dark:to-gray-300 tracking-tight">
-            Intel Trademark
-          </span>
-        </Link>
+    <header className="bg-white sticky top-0 z-50 transition-all duration-300 border-b border-gray-100 shadow-sm">
+      <nav className="max-w-[90rem] mx-auto flex items-center justify-between p-4 lg:px-8">
+        
+        {/* Left Side: Logo & Menu Text */}
+        <div className="flex items-center gap-8">
+          <Link href="/" className="flex items-center gap-2 group">
+            <div className="bg-yellow-500 p-2 rounded-lg text-white group-hover:scale-105 transition transform duration-200">
+              <FiShield className="text-xl" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-lg font-black text-[#121943] leading-none uppercase tracking-wide">
+                Global
+              </span>
+              <span className="text-[10px] font-bold text-yellow-500 leading-none uppercase tracking-wider mt-0.5">
+                Trademark Office
+              </span>
+            </div>
+          </Link>
+          
+          <button className="hidden lg:flex items-center gap-2 text-stone-800 font-semibold text-sm hover:text-yellow-500 transition">
+            <FiMenu className="text-xl" /> MENU
+          </button>
+        </div>
 
-        {/* Desktop Menu */}
-        <div className="hidden lg:flex items-center gap-6">
-          <ul className="flex space-x-1">
+        {/* Desktop Links */}
+        <div className="hidden lg:flex items-center gap-8">
+          <ul className="flex space-x-8">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className={`relative px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                    className={`relative text-[15px] font-medium transition-colors ${
                       isActive
-                        ? "text-orange-600 dark:text-orange-400 bg-orange-50/50 dark:bg-orange-950/10"
-                        : "text-stone-600 dark:text-stone-300 hover:text-gray-900 dark:hover:text-white hover:bg-orange-50/40 dark:hover:bg-gray-900/50"
+                        ? "text-yellow-500"
+                        : "text-stone-700 hover:text-yellow-500"
                     }`}
                   >
                     {link.label}
-                    {isActive && (
-                      <motion.div
-                        layoutId="activeNavIndicator"
-                        className="absolute bottom-0 left-4 right-4 h-0.5 bg-orange-600 dark:bg-orange-400 rounded-full"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      />
-                    )}
                   </Link>
                 </li>
               );
             })}
           </ul>
 
-          <div className="h-4 w-px bg-gray-200 dark:bg-gray-800" />
-
-          {/* Theme switcher */}
-          <button
-            onClick={toggleDarkMode}
-            className="p-2 rounded-xl bg-orange-50/40 hover:bg-orange-100/20 dark:bg-stone-900 dark:hover:bg-gray-800 text-stone-600 dark:text-stone-300 transition-all border border-orange-100/70 dark:border-stone-800"
-            aria-label="Toggle theme"
-          >
-            {darkMode ? <FiSun className="text-lg text-amber-400" /> : <FiMoon className="text-lg" />}
+          <button className="p-2 text-stone-700 hover:text-yellow-500 transition-colors" aria-label="Search">
+            <FiSearch className="text-xl" />
           </button>
-
-          <Link
-            href="/contact"
-            className="bg-gray-900 hover:bg-gray-800 dark:bg-orange-600 dark:hover:bg-orange-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-all transform hover:-translate-y-0.5 shadow-md shadow-gray-900/10 dark:shadow-orange-500/10"
-          >
-            Free Valuation
-          </Link>
         </div>
 
         {/* Mobile controls */}
-        <div className="flex items-center gap-2 lg:hidden">
-          <button
-            onClick={toggleDarkMode}
-            className="p-2 rounded-xl bg-orange-50/40 dark:bg-stone-900 text-stone-600 dark:text-stone-300 border border-orange-100/70 dark:border-stone-800"
-            aria-label="Toggle theme"
-          >
-            {darkMode ? <FiSun className="text-amber-400" /> : <FiMoon />}
+        <div className="flex items-center gap-4 lg:hidden">
+          <button className="text-stone-700 hover:text-yellow-500">
+            <FiSearch className="text-xl" />
           </button>
-          
           <button
-            className="p-2.5 rounded-xl bg-orange-50/40 dark:bg-stone-900 text-gray-700 dark:text-gray-200 border border-orange-100/70 dark:border-stone-800"
+            className="p-2 rounded-md bg-gray-50 text-gray-700"
             onClick={() => setOpen(!open)}
             aria-label="Toggle menu"
           >
@@ -131,7 +92,7 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-white dark:bg-stone-950 border-t border-orange-100/70 dark:border-stone-900 overflow-hidden shadow-inner"
+            className="lg:hidden bg-white border-t border-gray-100 overflow-hidden shadow-inner"
           >
             <ul className="flex flex-col p-4 space-y-2">
               {navLinks.map((link) => {
@@ -140,10 +101,10 @@ export default function Navbar() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className={`block px-4 py-3 rounded-xl font-bold transition-all text-base ${
+                      className={`block px-4 py-3 rounded-lg font-medium transition-all text-base ${
                         isActive
-                          ? "text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/20"
-                          : "text-stone-600 dark:text-stone-300 hover:text-gray-900 dark:hover:text-white hover:bg-orange-50/40 dark:hover:bg-gray-900"
+                          ? "text-yellow-500 bg-yellow-50"
+                          : "text-stone-700 hover:bg-gray-50"
                       }`}
                       onClick={() => setOpen(false)}
                     >
@@ -152,15 +113,6 @@ export default function Navbar() {
                   </li>
                 );
               })}
-              <li className="pt-2">
-                <Link
-                  href="/contact"
-                  className="block text-center bg-gray-900 dark:bg-orange-600 text-white font-bold py-3.5 rounded-xl shadow-md"
-                  onClick={() => setOpen(false)}
-                >
-                  Free Valuation Call
-                </Link>
-              </li>
             </ul>
           </motion.div>
         )}
