@@ -1,114 +1,345 @@
 "use client";
 
 import React, { useState } from "react";
-import { FiSearch, FiClock, FiArrowRight } from "react-icons/fi";
+import { motion, AnimatePresence, cubicBezier } from "framer-motion";
+import { FiHome, FiUser, FiMessageCircle, FiChevronRight, FiCalendar } from "react-icons/fi";
 import Link from "next/link";
+import { blogPosts } from "./posts";
+
+const EASE = cubicBezier(0.22, 1, 0.36, 1);
+
+const containerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.09 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 36 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE } },
+};
+
+const POSTS_PER_PAGE = 6;
 
 export default function Blog() {
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const blogPosts = [
-    {
-      title: "Hello world!",
-      excerpt: "Welcome to the official Global Trademark Office strategy board. We deliver structural security and legal guidelines to ensure commercial innovations remain entirely yours.",
-      category: "General",
-      date: "May 25, 2026",
-      readTime: "1 min read"
-    },
-    {
-      title: "Patent War: Iconic Legal Battles That Protect Shaped lead.",
-      excerpt: "Analyze historical tech giants disputes and courtroom patent war cases that established critical design patent boundaries and changed technological development paths.",
-      category: "Patent Strategy",
-      date: "May 22, 2026",
-      readTime: "8 min read"
-    },
-    {
-      title: "Code Clash: The Algorithms That Sparked Courtroom Chaos",
-      excerpt: "Are proprietary programming codes and software algorithms copyrightable or patentable? We explore recent courtroom rulings and the legal limits of digital protections.",
-      category: "Software IP",
-      date: "May 09, 2026",
-      readTime: "6 min read"
-    },
-    {
-      title: "Design Duel: Icons, Interfaces, and Intellectual Property",
-      excerpt: "Safeguard your mobile and web application UI designs. Discover the legal frameworks protecting graphics, layouts, and interactive user experiences.",
-      category: "Brand Protection",
-      date: "Apr 25, 2026",
-      readTime: "5 min read"
-    }
-  ];
-
-  const filteredPosts = blogPosts.filter(
-    (post) =>
-      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(blogPosts.length / POSTS_PER_PAGE);
+  const pagePosts = blogPosts.slice(
+    (currentPage - 1) * POSTS_PER_PAGE,
+    currentPage * POSTS_PER_PAGE
   );
 
-  return (
-    <div className="bg-white dark:bg-stone-950 transition-colors duration-300">
-      
-      {/* Page Header */}
-      <section className="py-20 bg-gradient-to-b from-orange-50/60 to-white dark:from-gray-900/50 dark:to-gray-950 relative overflow-hidden border-b border-orange-100/70 dark:border-stone-900">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808005_1px,transparent_1px),linear-gradient(to_bottom,#80808005_1px,transparent_1px)] bg-[size:14px_24px]" />
-        <div className="max-w-7xl mx-auto px-4 md:px-8 text-center relative z-10">
-          <span className="text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-widest bg-orange-50 dark:bg-orange-950/30 px-3.5 py-1.5 rounded-full">
-            Home &gt; Our Blog
-          </span>
-          <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 dark:text-white mt-6 tracking-tight leading-tight capitalize">
-            Our Blog
-          </h1>
+  function goTo(page: number) {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
-          {/* Search Input */}
-          <div className="mt-10 max-w-md mx-auto relative">
-            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg" />
-            <input
-              type="text"
-              placeholder="Search strategy, patents, code clash..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-gray-250 dark:border-stone-800 bg-white dark:bg-stone-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all shadow-sm"
-            />
-          </div>
+  return (
+    <div className="bg-white">
+
+      {/* ════════════════════════════════════════════════
+          HERO BANNER
+      ════════════════════════════════════════════════ */}
+      <section className="relative h-64 md:h-80 bg-[#121943] flex items-center overflow-hidden pt-16">
+        {/* Background */}
+        <div className="absolute inset-0">
+          <img
+            src="/our_story_team.png"
+            alt=""
+            className="w-full h-full object-cover opacity-20 mix-blend-luminosity"
+          />
+          <div className="absolute inset-0 bg-[#121943]/70" />
+        </div>
+
+        {/* Yellow glow blob */}
+        <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-96 h-96 rounded-full bg-[#EAB308] opacity-[0.06] blur-[90px] pointer-events-none" />
+        {/* Dot grid */}
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: "radial-gradient(circle, #ffffff 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+
+        {/* Triangle tab */}
+        <motion.div
+          className="absolute top-0 left-24 w-0 h-0"
+          style={{
+            borderLeft: "20px solid transparent",
+            borderRight: "20px solid transparent",
+            borderTop: "26px solid white",
+          }}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        />
+
+        <div className="relative z-10 max-w-[90rem] mx-auto px-4 md:px-8 w-full">
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: EASE }}
+            className="text-3xl sm:text-4xl md:text-6xl font-extrabold text-white mb-4 tracking-tight"
+          >
+            Our Blog
+          </motion.h1>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
+            className="flex items-center gap-2 text-gray-300 text-sm font-medium"
+          >
+            <FiHome className="text-gray-400 text-sm" />
+            <Link href="/" className="hover:text-[#EAB308] transition-colors duration-200">
+              Home
+            </Link>
+            <FiChevronRight className="text-gray-500 text-xs" />
+            <span className="text-white font-bold">Our Blog</span>
+          </motion.div>
         </div>
       </section>
 
-      {/* Blog Grid */}
-      <section className="py-24 bg-white dark:bg-stone-950">
-        <div className="max-w-6xl mx-auto px-4 md:px-8">
-          {filteredPosts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-              {filteredPosts.map((post, idx) => (
-                <article
-                  key={idx}
-                  className="bg-white dark:bg-stone-900 rounded-3xl border border-orange-100/70 dark:border-stone-800/80 p-8 shadow-sm hover:shadow-xl hover:border-orange-500/20 dark:hover:border-orange-500/30 transition-all duration-300 group flex flex-col justify-between"
+      {/* ════════════════════════════════════════════════
+          FEATURED POST (first post, full-width)
+      ════════════════════════════════════════════════ */}
+      {currentPage === 1 && (
+        <section className="max-w-[90rem] mx-auto px-4 md:px-8 pt-14 pb-0">
+          <motion.article
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.65, ease: EASE }}
+            whileHover={{ y: -4, transition: { duration: 0.25 } }}
+            className="group grid grid-cols-1 lg:grid-cols-2 border border-gray-100 shadow-sm overflow-hidden bg-white"
+          >
+            {/* Image */}
+            <div className="relative h-60 sm:h-72 lg:h-auto overflow-hidden bg-gray-100">
+              <img
+                src={blogPosts[0].image}
+                alt={blogPosts[0].title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+              {/* Date badge */}
+              <div className="absolute bottom-0 left-6 flex flex-col">
+                <div className="bg-[#121943] text-white text-center px-5 py-2 shadow-lg">
+                  <span className="text-4xl font-extrabold block leading-tight">{blogPosts[0].day}</span>
+                </div>
+                <div className="bg-[#EAB308] text-white text-center py-1.5 px-5 text-[10px] font-bold uppercase tracking-widest">
+                  {blogPosts[0].month}
+                </div>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-7 md:p-10 flex flex-col justify-center">
+              <span className="inline-block bg-[#EAB308] text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 mb-4 w-fit">
+                {blogPosts[0].category}
+              </span>
+
+              <div className="flex flex-wrap items-center gap-4 mb-4 text-sm text-gray-500 font-medium">
+                <span className="flex items-center gap-1.5">
+                  <FiUser className="text-[#EAB308] text-xs" />
+                  {blogPosts[0].author}
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <FiCalendar className="text-[#EAB308] text-xs" />
+                  {blogPosts[0].date}
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <FiMessageCircle className="text-[#EAB308] text-xs" />
+                  {blogPosts[0].comments}
+                </span>
+              </div>
+
+              <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 group-hover:text-[#EAB308] transition-colors duration-200 leading-snug mb-4">
+                {blogPosts[0].title}
+              </h2>
+
+              <p className="text-gray-500 text-sm leading-relaxed mb-6 line-clamp-3">
+                {blogPosts[0].excerpt}
+              </p>
+
+              <motion.div whileHover={{ x: 4 }} transition={{ duration: 0.2 }}>
+                <Link
+                  href={`/blog/${blogPosts[0].slug}`}
+                  className="inline-flex items-center gap-1.5 bg-[#121943] text-white text-sm font-bold px-6 py-3 hover:bg-[#EAB308] transition-colors duration-200"
                 >
-                  <div>
-                    <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-orange-50 dark:bg-orange-950/30 text-orange-700 dark:text-orange-300 mb-6">
-                      {post.category}
-                    </span>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400 transition leading-snug">
-                      {post.title}
-                    </h2>
-                    <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed mt-4">
-                      {post.excerpt}
-                    </p>
+                  Read Full Article <FiChevronRight />
+                </Link>
+              </motion.div>
+            </div>
+          </motion.article>
+        </section>
+      )}
+
+      {/* ════════════════════════════════════════════════
+          BLOG GRID
+      ════════════════════════════════════════════════ */}
+      <section className="py-12 md:py-16 bg-white">
+        <div className="max-w-[90rem] mx-auto px-4 md:px-8">
+
+          {/* Section label */}
+          <div className="flex items-center gap-4 mb-10">
+            <span className="text-[#EAB308] text-xs font-bold uppercase tracking-[0.25em]">
+              {currentPage === 1 ? "More Articles" : `Page ${currentPage}`}
+            </span>
+            <span className="flex-1 h-px bg-gray-200" />
+            <span className="text-gray-400 text-xs font-medium">
+              {blogPosts.length} Posts Total
+            </span>
+          </div>
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentPage}
+              className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit={{ opacity: 0, y: 16, transition: { duration: 0.22 } }}
+            >
+              {/* On page 1, skip the featured post (index 0) — show [1..5] */}
+              {(currentPage === 1 ? pagePosts.slice(1) : pagePosts).map((post, idx) => (
+                <motion.article
+                  key={post.slug}
+                  variants={itemVariants}
+                  whileHover={{ y: -6, transition: { duration: 0.22 } }}
+                  className="bg-white border border-gray-100 shadow-sm group overflow-hidden cursor-pointer flex flex-col"
+                  style={{ boxShadow: "0 1px 6px rgba(0,0,0,0.07)" }}
+                >
+                  {/* Image */}
+                  <div className="relative h-52 overflow-hidden bg-gray-100 flex-shrink-0">
+                    <motion.img
+                      src={post.image}
+                      alt={post.title}
+                      className="w-full h-full object-cover"
+                      whileHover={{ scale: 1.07 }}
+                      transition={{ duration: 0.5 }}
+                    />
+                    {/* Date badge */}
+                    <div className="absolute bottom-0 right-6 flex flex-col z-10">
+                      <div className="bg-[#121943] text-white text-center px-4 py-1.5 shadow-lg">
+                        <span className="text-3xl font-extrabold block leading-tight">{post.day}</span>
+                      </div>
+                      <div className="bg-[#EAB308] text-white text-center py-1 px-4 text-[9px] font-bold uppercase tracking-widest">
+                        {post.month}
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="mt-8 pt-6 border-t border-orange-100 dark:border-stone-800/60 flex items-center justify-between text-xs text-gray-400">
-                    <span className="font-bold text-gray-900 dark:text-white">{post.date}</span>
-                    <span className="flex items-center gap-1 font-semibold">
-                      <FiClock /> {post.readTime}
+                  {/* Body */}
+                  <div className="p-6 flex flex-col flex-1">
+                    {/* Category */}
+                    <span className="inline-block text-[#EAB308] text-[10px] font-bold uppercase tracking-widest mb-3">
+                      {post.category}
                     </span>
+
+                    {/* Meta */}
+                    <div className="flex flex-wrap items-center gap-3 mb-3 text-xs text-gray-400 font-medium">
+                      <span className="flex items-center gap-1">
+                        <FiUser className="text-[#EAB308] text-xs" />
+                        {post.author}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <FiMessageCircle className="text-[#EAB308] text-xs" />
+                        {post.comments}
+                      </span>
+                    </div>
+
+                    {/* Title */}
+                    <h2 className="text-base font-bold text-gray-900 group-hover:text-[#EAB308] transition-colors duration-200 leading-snug mb-3 flex-1 line-clamp-2">
+                      {post.title}
+                    </h2>
+
+                    {/* Excerpt */}
+                    <p className="text-gray-500 text-xs leading-relaxed mb-5 line-clamp-3">
+                      {post.excerpt}
+                    </p>
+
+                    {/* Divider */}
+                    <div className="border-t border-gray-100 pt-4">
+                      <motion.div whileHover={{ x: 4 }} transition={{ duration: 0.2 }}>
+                        <Link
+                          href={`/blog/${post.slug}`}
+                          className="flex items-center gap-1 text-[#EAB308] font-bold text-xs border-b border-[#EAB308] pb-0.5 w-fit hover:gap-2 transition-all duration-200"
+                        >
+                          Read More <FiChevronRight className="text-sm" />
+                        </Link>
+                      </motion.div>
+                    </div>
                   </div>
-                </article>
+                </motion.article>
               ))}
-            </div>
-          ) : (
-            <div className="text-center py-20">
-              <p className="text-stone-500 dark:text-stone-400 text-lg">No articles found matching your query.</p>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* ── Pagination ──────────────────────────────── */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-3 mt-14 flex-wrap">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <motion.button
+                  key={page}
+                  onClick={() => goTo(page)}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.93 }}
+                  className={`w-11 h-11 rounded-full font-bold text-sm transition-colors duration-200 ${
+                    currentPage === page
+                      ? "bg-[#EAB308] text-white shadow-md shadow-yellow-400/30"
+                      : "border-2 border-gray-300 text-gray-600 hover:border-[#EAB308] hover:text-[#EAB308] bg-white"
+                  }`}
+                >
+                  {page}
+                </motion.button>
+              ))}
+              <motion.button
+                onClick={() => goTo(Math.min(currentPage + 1, totalPages))}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.93 }}
+                disabled={currentPage === totalPages}
+                className="w-11 h-11 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-600 hover:border-[#EAB308] hover:text-[#EAB308] transition-colors duration-200 bg-white disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <FiChevronRight className="text-lg" />
+              </motion.button>
             </div>
           )}
+
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════
+          NEWSLETTER CTA
+      ════════════════════════════════════════════════ */}
+      <section className="bg-[#121943] py-14 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-80 h-80 rounded-full bg-[#EAB308] opacity-[0.06] blur-[80px]" />
+          <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-60 h-60 rounded-full bg-blue-400 opacity-[0.04] blur-[70px]" />
+        </div>
+        <div className="relative max-w-[90rem] mx-auto px-4 md:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div>
+            <p className="text-[#EAB308] text-xs font-bold uppercase tracking-[0.25em] mb-2">Stay Informed</p>
+            <h2 className="text-2xl md:text-3xl font-extrabold text-white leading-snug">
+              Get IP Law Insights Delivered <br className="hidden md:block" />
+              to Your Inbox
+            </h2>
+          </div>
+          <form
+            className="flex w-full md:w-auto max-w-md"
+            onSubmit={(e) => e.preventDefault()}
+          >
+            <input
+              type="email"
+              placeholder="Your email address"
+              className="bg-white text-gray-900 px-5 py-3.5 flex-1 focus:outline-none placeholder-gray-400 text-sm font-medium min-w-0"
+            />
+            <motion.button
+              type="submit"
+              className="bg-[#EAB308] text-white px-6 py-3.5 font-bold text-sm hover:bg-yellow-600 transition-colors whitespace-nowrap"
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
+            >
+              Subscribe
+            </motion.button>
+          </form>
         </div>
       </section>
 
