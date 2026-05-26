@@ -523,7 +523,7 @@ export default function Home() {
             {/* Right label */}
             <ScrollReveal direction="right" className="hidden md:flex">
               <div className="flex items-center gap-3">
-                <span className="text-gray-500 text-sm font-bold hidden md:block tracking-widest uppercase">Est. 2004</span>
+                <span className="text-gray-500 text-sm font-bold hidden md:block tracking-widest uppercase">Est. 2019</span>
                 <span className="w-8 h-[2px] bg-[#EAB308] rounded-full flex-shrink-0" />
               </div>
             </ScrollReveal>

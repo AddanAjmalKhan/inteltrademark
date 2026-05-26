@@ -330,7 +330,7 @@ export default function Navbar() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.7 }}
                 >
-                  Protecting your ideas since 2004.
+                  Protecting your ideas since 2019.
                 </motion.p>
               </motion.div>
 
