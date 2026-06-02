@@ -57,20 +57,20 @@ const contactItems = [
   {
     icon: FiMapPin,
     label: "Address",
-    value: "Stone Mountain Park Drive, GA 30083",
-    href: null,
+    value: "8229 Boone Boulevard, Suite 200, Vienna, VA",
+    href: "https://maps.google.com/?q=8229+Boone+Boulevard+Suite+200+Vienna+VA",
   },
   {
     icon: FiPhone,
     label: "Phone",
-    value: "+415-864-8728",
-    href: "tel:+4158648728",
+    value: "+1 571 543 1187",
+    href: "tel:+15715431187",
   },
   {
     icon: FiMail,
     label: "Email",
-    value: "legal@globaltrademarkoffice.com",
-    href: "mailto:legal@globaltrademarkoffice.com",
+    value: "Info@inteltrademark.com",
+    href: "mailto:Info@inteltrademark.com",
   },
 ];
 
@@ -80,16 +80,28 @@ export default function Contact() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email) return;
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setError("");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, formType: "Contact Form" }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to send");
       setIsSubmitted(true);
       setFormData({ name: "", email: "", phone: "", service: "", message: "" });
-    }, 1200);
+    } catch (err: any) {
+      setError(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -420,6 +432,12 @@ export default function Contact() {
                         />
                       </motion.div>
 
+                      {/* Error message */}
+                      {error && (
+                        <p className="text-red-500 text-sm font-medium bg-red-50 border border-red-200 px-4 py-3">
+                          {error}
+                        </p>
+                      )}
                       {/* Submit */}
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -513,13 +531,14 @@ export default function Contact() {
           {/* Yellow top-border accent */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-[#EAB308] z-10" />
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.2536838321683!2d-73.97962452345097!3d40.75646193489871!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c258fe32f62cb9%3A0x6b77242ba43ce814!2s636%205th%20Ave%2C%20New%20York%2C%20NY%2010020%2C%20USA!5e0!3m2!1sen!2sus!4v1716664951460!5m2!1sen!2sus"
+            src="https://maps.google.com/maps?q=8229+Boone+Boulevard+Suite+200+Vienna+VA+22182&t=&z=15&ie=UTF8&iwloc=&output=embed"
             width="100%"
             height="100%"
             style={{ border: 0 }}
             allowFullScreen
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
+            title="Intel Trademark Office Location"
           />
         </div>
       </Reveal>

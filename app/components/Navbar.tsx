@@ -390,8 +390,8 @@ export default function Navbar() {
                 {/* Contact items */}
                 {[
                   { Icon: FiMapPin, label: "Location",  value: "819 S Grevillea Ave\nInglewood CA 90301, USA", href: undefined },
-                  { Icon: FiPhone,  label: "Call Us",   value: "+ (209)-584-0601",                             href: "tel:+12095840601" },
-                  { Icon: FiMail,   label: "Email Us",  value: "legal@globaltrademarkoffice.com",              href: "mailto:legal@globaltrademarkoffice.com" },
+                  { Icon: FiPhone,  label: "Call Us",   value: "+1 571 543 1187",           href: "tel:+15715431187" },
+                  { Icon: FiMail,   label: "Email Us",  value: "Info@inteltrademark.com",   href: "mailto:Info@inteltrademark.com" },
                 ].map(({ Icon, label, value, href }, i) => (
                   <motion.div
                     key={label}

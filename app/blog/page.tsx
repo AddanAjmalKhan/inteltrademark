@@ -306,42 +306,6 @@ export default function Blog() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════
-          NEWSLETTER CTA
-      ════════════════════════════════════════════════ */}
-      <section className="bg-[#121943] py-14 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-80 h-80 rounded-full bg-[#EAB308] opacity-[0.06] blur-[80px]" />
-          <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-60 h-60 rounded-full bg-blue-400 opacity-[0.04] blur-[70px]" />
-        </div>
-        <div className="relative max-w-[90rem] mx-auto px-4 md:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div>
-            <p className="text-[#EAB308] text-xs font-bold uppercase tracking-[0.25em] mb-2">Stay Informed</p>
-            <h2 className="text-2xl md:text-3xl font-extrabold text-white leading-snug">
-              Get IP Law Insights Delivered <br className="hidden md:block" />
-              to Your Inbox
-            </h2>
-          </div>
-          <form
-            className="flex w-full md:w-auto max-w-md"
-            onSubmit={(e) => e.preventDefault()}
-          >
-            <input
-              type="email"
-              placeholder="Your email address"
-              className="bg-white text-gray-900 px-5 py-3.5 flex-1 focus:outline-none placeholder-gray-400 text-sm font-medium min-w-0"
-            />
-            <motion.button
-              type="submit"
-              className="bg-[#EAB308] text-white px-6 py-3.5 font-bold text-sm hover:bg-yellow-600 transition-colors whitespace-nowrap"
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-            >
-              Subscribe
-            </motion.button>
-          </form>
-        </div>
-      </section>
 
     </div>
   );

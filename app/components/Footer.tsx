@@ -3,7 +3,7 @@
 import React, { useRef } from "react";
 import Link from "next/link";
 import { motion, useInView, cubicBezier } from "framer-motion";
-import { FiMail, FiSend, FiArrowUp } from "react-icons/fi";
+import { FiMail, FiArrowUp } from "react-icons/fi";
 import { IntelTrademarkLogo } from "./Logo";
 
 const EASE = cubicBezier(0.22, 1, 0.36, 1);
@@ -71,26 +71,6 @@ export default function Footer() {
                 Our team do comprises professional with experience.
               </p>
 
-              {/* Email subscribe */}
-              <form
-                className="flex w-full"
-                onSubmit={(e) => e.preventDefault()}
-              >
-                <input
-                  type="email"
-                  placeholder="Enter Your Email"
-                  className="bg-white text-gray-900 px-4 py-3.5 w-full focus:outline-none placeholder-gray-400 text-sm font-medium"
-                />
-                <motion.button
-                  type="submit"
-                  className="bg-[#EAB308] text-white px-5 py-3.5 hover:bg-yellow-600 transition-colors flex items-center justify-center"
-                  whileHover={{ scale: 1.08 }}
-                  whileTap={{ scale: 0.93 }}
-                >
-                  <FiSend className="text-lg" />
-                </motion.button>
-              </form>
-
               {/* Email address */}
               <motion.div
                 className="flex items-center gap-3 text-gray-300"
@@ -99,10 +79,10 @@ export default function Footer() {
               >
                 <FiMail className="text-[#EAB308] text-xl flex-shrink-0" />
                 <a
-                  href="mailto:legal@globaltrademarkoffice.com"
+                  href="mailto:Info@inteltrademark.com"
                   className="hover:text-[#EAB308] transition-colors text-sm font-medium"
                 >
-                  legal@globaltrademarkoffice.com
+                  Info@inteltrademark.com
                 </a>
               </motion.div>
             </div>

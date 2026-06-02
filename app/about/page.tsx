@@ -107,15 +107,13 @@ function SectionLabel({ text }: { text: string }) {
 }
 
 export default function About() {
-  const [formData, setFormData] = useState({ name: "", email: "", phone: "", service: "", message: "" });
-  const [submitted, setSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [videoOpen, setVideoOpen] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setTimeout(() => { setIsSubmitting(false); setSubmitted(true); }, 1200);
-  };
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setVideoOpen(false); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
 
   return (
     <div className="bg-white overflow-x-hidden">
@@ -370,9 +368,8 @@ export default function About() {
           <img src="/our_story_team.png" alt="Team" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/55" />
           <div className="absolute inset-0 flex items-center justify-center z-10">
-            <motion.a
-              href="https://www.youtube.com/watch?v=YS3PwmOQ1Fc"
-              target="_blank" rel="noopener noreferrer"
+            <motion.button
+              onClick={() => setVideoOpen(true)}
               className="relative w-24 h-24 rounded-full bg-[#EAB308] flex items-center justify-center shadow-2xl"
               whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.93 }}
               initial={{ opacity: 0, scale: 0.5 }}
@@ -390,7 +387,7 @@ export default function About() {
               <svg className="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M4 4l12 6-12 6V4z" />
               </svg>
-            </motion.a>
+            </motion.button>
           </div>
         </div>
 
@@ -480,101 +477,13 @@ export default function About() {
       </section>
 
       {/* ══════════════════════════════════════════════════════
-          FREE QUOTE  (left white card)  +  TESTIMONIAL  (right navy)
+          TESTIMONIAL
       ══════════════════════════════════════════════════════ */}
       <section className="bg-[#121943]">
         <div className="max-w-[90rem] mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-5">
-
-            {/* Left: white quote card */}
-            <Reveal direction="left" className="lg:col-span-2 p-8 lg:p-14">
-              <div className="bg-white p-8 md:p-10 shadow-2xl">
-                <h3 className="text-3xl font-extrabold text-gray-900 mb-8">Get a Free Quote</h3>
-
-                <AnimatePresence mode="wait">
-                  {!submitted ? (
-                    <motion.form key="form" onSubmit={handleSubmit}
-                      className="space-y-4"
-                      initial={{ opacity: 1 }} exit={{ opacity: 0, y: -10 }}
-                    >
-                      <motion.div className="grid grid-cols-2 gap-4"
-                        variants={containerVariants} initial="hidden" animate="visible"
-                      >
-                        {[
-                          { ph: "Name",   type: "text",  key: "name"  },
-                          { ph: "Email",  type: "email", key: "email" },
-                          { ph: "Phone",  type: "tel",   key: "phone" },
-                        ].map((f) => (
-                          <motion.input key={f.key} variants={itemVariants}
-                            type={f.type} placeholder={f.ph}
-                            value={(formData as any)[f.key]}
-                            onChange={(e) => setFormData({ ...formData, [f.key]: e.target.value })}
-                            className={`px-4 py-3 border border-gray-200 text-gray-900 focus:outline-none focus:border-[#EAB308] placeholder-gray-400 text-sm font-medium transition-colors ${f.key === "phone" ? "col-span-1" : ""}`}
-                          />
-                        ))}
-                        <motion.div variants={itemVariants} className="relative">
-                          <select value={formData.service}
-                            onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                            className={`w-full px-4 py-3 border border-gray-200 focus:outline-none focus:border-[#EAB308] appearance-none text-sm font-medium transition-colors ${formData.service ? "text-gray-900" : "text-gray-400"}`}
-                          >
-                            <option value="" disabled>Select Service</option>
-                            <option value="corporate">Corporate Compliance</option>
-                            <option value="ip-law">IP Law</option>
-                            <option value="arbitration">Commercial Arbitration</option>
-                          </select>
-                          <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-400">
-                            <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
-                          </div>
-                        </motion.div>
-                      </motion.div>
-
-                      <motion.textarea rows={4} placeholder="Write a Message"
-                        value={formData.message}
-                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-200 text-gray-900 focus:outline-none focus:border-[#EAB308] placeholder-gray-400 text-sm font-medium transition-colors resize-none"
-                        initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.35, duration: 0.45, ease: EASE }}
-                      />
-
-                      <motion.button type="submit" disabled={isSubmitting}
-                        whileHover={!isSubmitting ? { scale: 1.02 } : {}}
-                        whileTap={!isSubmitting ? { scale: 0.97 } : {}}
-                        className={`flex items-center gap-2 font-bold px-8 py-4 text-white transition-colors ${isSubmitting ? "bg-gray-400" : "bg-[#EAB308] hover:bg-yellow-600"}`}
-                        initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.45, duration: 0.45, ease: EASE }}
-                      >
-                        {isSubmitting ? (
-                          <><motion.div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-                            animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-                          /> Submitting…</>
-                        ) : (
-                          <>Request Consultation <FiChevronRight /></>
-                        )}
-                      </motion.button>
-                    </motion.form>
-                  ) : (
-                    <motion.div key="ok" className="flex flex-col items-center py-12 text-center"
-                      initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.5, ease: EASE }}
-                    >
-                      <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
-                        transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.15 }}
-                      >
-                        <FiCheckCircle className="text-[#EAB308] text-6xl mb-5" />
-                      </motion.div>
-                      <h4 className="text-xl font-extrabold text-gray-900">Message Sent!</h4>
-                      <p className="text-gray-500 text-sm mt-2">We'll be in touch within 4 business hours.</p>
-                      <button onClick={() => setSubmitted(false)}
-                        className="mt-6 text-[#EAB308] font-bold text-sm hover:underline"
-                      >← Send Another</button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </Reveal>
-
-            {/* Right: testimonial */}
-            <Reveal direction="right" delay={0.1} className="lg:col-span-3 flex flex-col justify-center px-8 lg:px-14 py-14 relative overflow-hidden">
+          <div>
+            {/* Testimonial — full width */}
+            <Reveal direction="up" className="flex flex-col justify-center px-8 lg:px-24 py-16 relative overflow-hidden">
               {/* Decorative large quote mark bg */}
               <div className="absolute right-8 top-1/2 -translate-y-1/2 text-[200px] font-serif text-white/5 leading-none select-none pointer-events-none">"</div>
 
@@ -714,6 +623,52 @@ export default function About() {
 
         </div>
       </section>
+
+      {/* ── YOUTUBE VIDEO MODAL ─────────────────────────────── */}
+      <AnimatePresence>
+        {videoOpen && (
+          <motion.div
+            className="fixed inset-0 z-[9999] flex items-center justify-center px-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            <motion.div
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+              onClick={() => setVideoOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+            <motion.div
+              className="relative w-full max-w-4xl z-10"
+              initial={{ opacity: 0, scale: 0.88, y: 40 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.88, y: 40 }}
+              transition={{ duration: 0.35, ease: EASE }}
+              style={{ aspectRatio: "16/9" }}
+            >
+              <button
+                onClick={() => setVideoOpen(false)}
+                className="absolute -top-10 right-0 text-white/70 hover:text-white text-sm font-bold flex items-center gap-1.5 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Close (Esc)
+              </button>
+              <iframe
+                src="https://www.youtube.com/embed/YS3PwmOQ1Fc?autoplay=1&rel=0&modestbranding=1&color=white"
+                title="Intel Trademark Overview"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full border-0"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   );

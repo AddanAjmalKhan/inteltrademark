@@ -75,7 +75,17 @@ export default function Home() {
   const [activeCaseTab, setActiveCaseTab] = useState<"all" | "copyright" | "patent" | "trademark">("all");
   const [quoteService, setQuoteService] = useState("");
   const [quoteSubmitted, setQuoteSubmitted] = useState(false);
+  const [quoteSubmitting, setQuoteSubmitting] = useState(false);
+  const [quoteError, setQuoteError] = useState("");
   const [openFaq, setOpenFaq] = useState<number>(0);
+  const [videoOpen, setVideoOpen] = useState(false);
+
+  /* Close video modal on Escape */
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setVideoOpen(false); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
 
   /* Hero parallax */
   const heroRef = useRef(null);
@@ -133,10 +143,35 @@ export default function Home() {
     { title: "Design Duel: Icons, Interfaces, and Intellectual Property", excerpt: "Safeguard your application UI design. Discover the legal frameworks protecting graphics, layouts, and user experiences.", date: "Apr 25, 2026", readTime: "5 min read" }
   ];
 
-  const handleQuoteSubmit = (e: React.FormEvent) => {
+  const handleQuoteSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setQuoteSubmitted(true);
-    setTimeout(() => setQuoteSubmitted(false), 4000);
+    setQuoteSubmitting(true);
+    setQuoteError("");
+    const fd = new FormData(e.currentTarget);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: fd.get("name") as string,
+          email: fd.get("email") as string,
+          phone: fd.get("phone") as string,
+          service: quoteService,
+          message: fd.get("message") as string,
+          formType: "Quote Request",
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to send");
+      setQuoteSubmitted(true);
+      setQuoteService("");
+      (e.target as HTMLFormElement).reset();
+      setTimeout(() => setQuoteSubmitted(false), 5000);
+    } catch (err: any) {
+      setQuoteError(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setQuoteSubmitting(false);
+    }
   };
 
   return (
@@ -283,11 +318,9 @@ export default function Home() {
                 </Link>
               </motion.div>
 
-              {/* Secondary — Watch video */}
-              <motion.a
-                href="https://www.youtube.com/watch?v=YS3PwmOQ1Fc"
-                target="_blank"
-                rel="noopener noreferrer"
+              {/* Secondary — Watch video (opens in-page embed) */}
+              <motion.button
+                onClick={() => setVideoOpen(true)}
                 className="inline-flex items-center gap-3.5 text-white font-semibold text-[15px] group"
                 whileHover={{ x: 5 }}
                 transition={{ duration: 0.22 }}
@@ -305,7 +338,7 @@ export default function Home() {
                   />
                 </div>
                 Watch Overview
-              </motion.a>
+              </motion.button>
             </motion.div>
 
           </div>
@@ -367,11 +400,9 @@ export default function Home() {
               <div className="text-gray-400 text-xs font-semibold mt-1 tracking-wide">Years of Practice</div>
             </motion.div>
 
-            {/* ── Play button (center-image) ── */}
-            <motion.a
-              href="https://www.youtube.com/watch?v=YS3PwmOQ1Fc"
-              target="_blank"
-              rel="noopener noreferrer"
+            {/* ── Play button (center-image) — opens in-page embed ── */}
+            <motion.button
+              onClick={() => setVideoOpen(true)}
               className="absolute top-[44%] left-[46%] -translate-x-1/2 -translate-y-1/2 z-30 w-[72px] h-[72px] bg-white rounded-full flex items-center justify-center shadow-2xl shadow-black/30"
               whileHover={{ scale: 1.14 }}
               whileTap={{ scale: 0.94 }}
@@ -392,7 +423,7 @@ export default function Home() {
               <svg className="w-6 h-6 text-[#121943] ml-1" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M4 4l12 6-12 6V4z" />
               </svg>
-            </motion.a>
+            </motion.button>
 
             {/* ── Dot cluster — top-right corner ── */}
             <div
@@ -864,14 +895,15 @@ export default function Home() {
                 viewport={{ once: true }}
               >
                 {[
-                  { type: "text", placeholder: "Name", required: true },
-                  { type: "email", placeholder: "Email", required: true },
-                  { type: "tel", placeholder: "Phone", required: false }
+                  { type: "text",  name: "name",  placeholder: "Name",  required: true },
+                  { type: "email", name: "email", placeholder: "Email", required: true },
+                  { type: "tel",   name: "phone", placeholder: "Phone", required: false }
                 ].map((field, i) => (
                   <motion.input
                     key={i}
                     variants={itemVariants}
                     type={field.type}
+                    name={field.name}
                     required={field.required}
                     placeholder={field.placeholder}
                     className="w-full px-5 py-4 rounded-none border border-[#1e295e] bg-[#121943] text-white focus:outline-none focus:border-[#EAB308] placeholder-gray-500 transition-colors"
@@ -896,6 +928,7 @@ export default function Home() {
               </motion.div>
 
               <motion.textarea
+                name="message"
                 placeholder="Write a Message"
                 rows={5}
                 className="w-full px-5 py-4 rounded-none border border-[#1e295e] bg-[#121943] text-white focus:outline-none focus:border-[#EAB308] placeholder-gray-500 transition-colors"
@@ -908,24 +941,37 @@ export default function Home() {
 
               <motion.button
                 type="submit"
-                className="w-full bg-[#EAB308] hover:bg-yellow-600 text-white font-bold py-4 transition-colors"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
+                disabled={quoteSubmitting}
+                className={`w-full font-bold py-4 text-white transition-colors flex items-center justify-center gap-2 ${quoteSubmitting ? "bg-gray-500 cursor-not-allowed" : "bg-[#EAB308] hover:bg-yellow-600"}`}
+                whileHover={!quoteSubmitting ? { scale: 1.02 } : {}}
+                whileTap={!quoteSubmitting ? { scale: 0.97 } : {}}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.4 }}
               >
-                Send Message
+                {quoteSubmitting ? (
+                  <>
+                    <motion.div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                      animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }} />
+                    Sending…
+                  </>
+                ) : "Send Message"}
               </motion.button>
 
               <AnimatePresence>
+                {quoteError && (
+                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    className="text-red-400 text-sm font-medium bg-red-900/20 border border-red-500/30 px-4 py-3">
+                    {quoteError}
+                  </motion.p>
+                )}
                 {quoteSubmitted && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="text-[#EAB308] text-sm font-bold"
+                    className="text-[#EAB308] text-sm font-bold flex items-center gap-2"
                   >
                     ✓ Thank you. We will contact you shortly.
                   </motion.div>
@@ -1190,17 +1236,73 @@ export default function Home() {
               <div>
                 <span className="text-sm font-semibold text-gray-300 block mb-1">Toll Free Call.</span>
                 <motion.a
-                  href="tel:+019489209"
+                  href="tel:+15715431187"
                   className="text-3xl font-extrabold hover:text-[#EAB308] transition-colors"
                   whileHover={{ x: 4 }}
                 >
-                  +019-489-209
+                  +1 571 543 1187
                 </motion.a>
               </div>
             </ScrollReveal>
           </div>
         </div>
       </section>
+
+      {/* ══════════════════════════════════════════════════════════════
+          YOUTUBE VIDEO MODAL
+      ══════════════════════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {videoOpen && (
+          <motion.div
+            className="fixed inset-0 z-[9999] flex items-center justify-center px-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            {/* Backdrop — click to close */}
+            <motion.div
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+              onClick={() => setVideoOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+
+            {/* Modal container */}
+            <motion.div
+              className="relative w-full max-w-4xl z-10"
+              initial={{ opacity: 0, scale: 0.88, y: 40 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.88, y: 40 }}
+              transition={{ duration: 0.35, ease: EASE }}
+              style={{ aspectRatio: "16/9" }}
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setVideoOpen(false)}
+                className="absolute -top-10 right-0 text-white/70 hover:text-white text-sm font-bold flex items-center gap-1.5 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Close (Esc)
+              </button>
+
+              {/* YouTube embed — autoplay on open, paused when closed */}
+              <iframe
+                src={videoOpen
+                  ? "https://www.youtube.com/embed/YS3PwmOQ1Fc?autoplay=1&rel=0&modestbranding=1&color=white"
+                  : ""}
+                title="Intel Trademark Overview"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full border-0"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   );

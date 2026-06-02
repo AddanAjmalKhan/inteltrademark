@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useInView, cubicBezier } from "framer-motion";
 import {
   FiChevronDown, FiChevronRight, FiHome, FiShield, FiLock,
@@ -81,6 +81,13 @@ const faqs = [
 
 export default function Services() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [videoOpen, setVideoOpen] = useState(false);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setVideoOpen(false); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
 
   return (
     <div className="bg-white overflow-x-hidden">
@@ -215,10 +222,8 @@ export default function Services() {
 
           {/* Centered play button */}
           <div className="absolute inset-0 flex items-center justify-center z-10">
-            <motion.a
-              href="https://www.youtube.com/watch?v=YS3PwmOQ1Fc"
-              target="_blank"
-              rel="noopener noreferrer"
+            <motion.button
+              onClick={() => setVideoOpen(true)}
               className="relative w-24 h-24 rounded-full bg-[#EAB308] flex items-center justify-center shadow-2xl"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.93 }}
@@ -238,7 +243,7 @@ export default function Services() {
               <svg className="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M4 4l12 6-12 6V4z" />
               </svg>
-            </motion.a>
+            </motion.button>
           </div>
         </div>
 
@@ -516,6 +521,52 @@ export default function Services() {
           </div>
         </div>
       </section>
+
+      {/* ── YOUTUBE VIDEO MODAL ─────────────────────────────── */}
+      <AnimatePresence>
+        {videoOpen && (
+          <motion.div
+            className="fixed inset-0 z-[9999] flex items-center justify-center px-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            <motion.div
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+              onClick={() => setVideoOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+            <motion.div
+              className="relative w-full max-w-4xl z-10"
+              initial={{ opacity: 0, scale: 0.88, y: 40 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.88, y: 40 }}
+              transition={{ duration: 0.35, ease: EASE }}
+              style={{ aspectRatio: "16/9" }}
+            >
+              <button
+                onClick={() => setVideoOpen(false)}
+                className="absolute -top-10 right-0 text-white/70 hover:text-white text-sm font-bold flex items-center gap-1.5 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Close (Esc)
+              </button>
+              <iframe
+                src="https://www.youtube.com/embed/YS3PwmOQ1Fc?autoplay=1&rel=0&modestbranding=1&color=white"
+                title="Intel Trademark Overview"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full border-0"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   );
