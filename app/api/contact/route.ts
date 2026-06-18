@@ -76,6 +76,20 @@ export async function POST(req: Request) {
       console.error("[contact/route] Resend error (auto-reply):", replyError);
     }
 
+    /* ── Save lead to dashboard ── */
+    try {
+      await fetch(`${process.env.DASHBOARD_URL}/api/public/contact`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-secret": process.env.CONTACT_API_SECRET ?? "",
+        },
+        body: JSON.stringify({ name, email, phone: phone ?? null, source: "IntelTrademark" }),
+      });
+    } catch {
+      // Non-fatal — email already sent successfully
+    }
+
     return Response.json({ success: true });
   } catch (err) {
     console.error("[contact/route] unexpected error:", err);
