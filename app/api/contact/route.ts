@@ -22,6 +22,7 @@ export async function POST(req: Request) {
     const { error: firmError } = await resend.emails.send({
       from,
       to,
+      replyTo: email,
       subject: `[Intel Trademark] New ${formType} from ${name}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
