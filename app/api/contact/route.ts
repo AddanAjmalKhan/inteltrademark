@@ -37,6 +37,7 @@ export async function POST(req: Request) {
         to,
         replyTo: email,
         subject: `[Intel Trademark] New ${formType} from ${name}`,
+        text: `New ${formType} Submission\n\nName: ${name}\nEmail: ${email}${phone ? `\nPhone: ${phone}` : ''}${service ? `\nService: ${service}` : ''}${message ? `\nMessage:\n${message}` : ''}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: #121943; padding: 24px; text-align: center;">
