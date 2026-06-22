@@ -1,6 +1,18 @@
 import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+const smtpTransport = nodemailer.createTransport({
+  host: process.env.SMTP_HOST ?? "premium77.web-hosting.com",
+  port: Number(process.env.SMTP_PORT ?? 465),
+  secure: true,
+  auth: {
+    user: process.env.SMTP_USER ?? "info@inteltrademark.com",
+    pass: process.env.SMTP_PASS,
+  },
+  tls: { rejectUnauthorized: false },
+});
 
 export async function POST(req: Request) {
   try {
@@ -18,37 +30,37 @@ export async function POST(req: Request) {
       return Response.json({ error: "Server misconfiguration: CONTACT_EMAIL not set." }, { status: 500 });
     }
 
-    /* ── Notify the firm ── */
-    const { error: firmError } = await resend.emails.send({
-      from,
-      to,
-      replyTo: email,
-      subject: `[Intel Trademark] New ${formType} from ${name}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <div style="background: #121943; padding: 24px; text-align: center;">
-            <h1 style="color: #EAB308; margin: 0; font-size: 20px; letter-spacing: 1px;">INTEL TRADEMARK</h1>
-            <p style="color: #9ca3af; margin: 4px 0 0; font-size: 12px;">New ${formType} Submission</p>
+    /* ── Notify the firm via SMTP (premium77 → premium77, guaranteed delivery) ── */
+    try {
+      await smtpTransport.sendMail({
+        from: `"Intel Trademark Website" <${process.env.SMTP_USER ?? "info@inteltrademark.com"}>`,
+        to,
+        replyTo: email,
+        subject: `[Intel Trademark] New ${formType} from ${name}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background: #121943; padding: 24px; text-align: center;">
+              <h1 style="color: #EAB308; margin: 0; font-size: 20px; letter-spacing: 1px;">INTEL TRADEMARK</h1>
+              <p style="color: #9ca3af; margin: 4px 0 0; font-size: 12px;">New ${formType} Submission</p>
+            </div>
+            <div style="padding: 32px; background: #f9fafb; border: 1px solid #e5e7eb;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #6b7280; font-size: 13px; width: 120px;">Name</td><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #111827;">${name}</td></tr>
+                <tr><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #6b7280; font-size: 13px;">Email</td><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #111827;"><a href="mailto:${email}" style="color: #EAB308;">${email}</a></td></tr>
+                ${phone ? `<tr><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #6b7280; font-size: 13px;">Phone</td><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #111827;">${phone}</td></tr>` : ""}
+                ${service ? `<tr><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #6b7280; font-size: 13px;">Service</td><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #111827;">${service}</td></tr>` : ""}
+                ${message ? `<tr><td style="padding: 10px 0; color: #6b7280; font-size: 13px; vertical-align: top;">Message</td><td style="padding: 10px 0; color: #374151; line-height: 1.6;">${message.replace(/\n/g, "<br>")}</td></tr>` : ""}
+              </table>
+            </div>
+            <div style="padding: 16px 32px; background: #fff; border: 1px solid #e5e7eb; border-top: none; text-align: right;">
+              <a href="mailto:${email}" style="background: #EAB308; color: #fff; padding: 10px 20px; text-decoration: none; font-weight: bold; font-size: 13px;">Reply to ${name}</a>
+            </div>
           </div>
-          <div style="padding: 32px; background: #f9fafb; border: 1px solid #e5e7eb;">
-            <table style="width: 100%; border-collapse: collapse;">
-              <tr><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #6b7280; font-size: 13px; width: 120px;">Name</td><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #111827;">${name}</td></tr>
-              <tr><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #6b7280; font-size: 13px;">Email</td><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #111827;"><a href="mailto:${email}" style="color: #EAB308;">${email}</a></td></tr>
-              ${phone ? `<tr><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #6b7280; font-size: 13px;">Phone</td><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #111827;">${phone}</td></tr>` : ""}
-              ${service ? `<tr><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #6b7280; font-size: 13px;">Service</td><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #111827;">${service}</td></tr>` : ""}
-              ${message ? `<tr><td style="padding: 10px 0; color: #6b7280; font-size: 13px; vertical-align: top;">Message</td><td style="padding: 10px 0; color: #374151; line-height: 1.6;">${message.replace(/\n/g, "<br>")}</td></tr>` : ""}
-            </table>
-          </div>
-          <div style="padding: 16px 32px; background: #fff; border: 1px solid #e5e7eb; border-top: none; text-align: right;">
-            <a href="mailto:${email}" style="background: #EAB308; color: #fff; padding: 10px 20px; text-decoration: none; font-weight: bold; font-size: 13px;">Reply to ${name}</a>
-          </div>
-        </div>
-      `,
-    });
-
-    if (firmError) {
-      console.error("[contact/route] Resend error (firm email):", firmError);
-      return Response.json({ error: firmError.message }, { status: 500 });
+        `,
+      });
+    } catch (smtpErr: any) {
+      console.error("[contact/route] SMTP error (firm email):", smtpErr?.message);
+      return Response.json({ error: "Failed to send notification." }, { status: 500 });
     }
 
     /* ── Auto-reply to the client ── */

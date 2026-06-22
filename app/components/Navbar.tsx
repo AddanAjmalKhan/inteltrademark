@@ -391,7 +391,7 @@ export default function Navbar() {
                 {[
                   { Icon: FiMapPin, label: "Location",  value: "819 S Grevillea Ave\nInglewood CA 90301, USA", href: undefined },
                   { Icon: FiPhone,  label: "Call Us",   value: "+1 571 543 1187",           href: "tel:+15715431187" },
-                  { Icon: FiMail,   label: "Email Us",  value: "Info@inteltrademark.com",   href: "mailto:Info@inteltrademark.com" },
+                  { Icon: FiMail,   label: "Email Us",  value: "info@inteltrademark.com",   href: "mailto:info@inteltrademark.com" },
                 ].map(({ Icon, label, value, href }, i) => (
                   <motion.div
                     key={label}

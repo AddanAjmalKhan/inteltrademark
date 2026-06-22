@@ -79,10 +79,10 @@ export default function Footer() {
               >
                 <FiMail className="text-[#EAB308] text-xl flex-shrink-0" />
                 <a
-                  href="mailto:Info@inteltrademark.com"
+                  href="mailto:info@inteltrademark.com"
                   className="hover:text-[#EAB308] transition-colors text-sm font-medium"
                 >
-                  Info@inteltrademark.com
+                  info@inteltrademark.com
                 </a>
               </motion.div>
             </div>

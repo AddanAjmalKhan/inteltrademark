@@ -69,8 +69,8 @@ const contactItems = [
   {
     icon: FiMail,
     label: "Email",
-    value: "Info@inteltrademark.com",
-    href: "mailto:Info@inteltrademark.com",
+    value: "info@inteltrademark.com",
+    href: "mailto:info@inteltrademark.com",
   },
 ];
 
